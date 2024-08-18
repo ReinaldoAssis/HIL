@@ -46,11 +46,11 @@ class TCPConnection(ConnectionInterface):
             except:
                 if self.verbose:
                     info("[ERR]", f"FAILED TO BIND TO {self.port}, TRYING ANOTHER ONE...")
-                    self.port += 10
-                    failed_bind = True
-                    ntry -= 1
-                    if ntry == 0:
-                        raise Exception("Exceded number of attempts, failed to bind TCP port.")
+                self.port += 10
+                failed_bind = True
+                ntry -= 1
+                if ntry == 0:
+                    raise Exception("Exceded number of attempts, failed to bind TCP port.")
 
     def disconnect(self):
         if self.conn:
