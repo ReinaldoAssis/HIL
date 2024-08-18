@@ -1,5 +1,3 @@
-# server.py
-
 import socket
 import json
 import numpy as np
@@ -8,6 +6,11 @@ import exceptions
 
 # TODO: o servidor ainda não está utilizando a interface genérica do lib.py, ainda não consegui
 # achar alguns bugs, esse servidor funciona para a conexão tcp
+
+# Implementei uma função simples info(status, msg) para facilitar a entrega da informação do que está sendo
+# realizado, acho que isso é importante pois se algo acontecer de errado durante a aula, o usuário
+# consegue saber exatamente onde no processo o erro ocorreu (por isso é importante fazer vários tratamentos
+# de erro).
 
 def info(status, msg, pad=60):
     dot_count = pad - len(msg) - len(status)
