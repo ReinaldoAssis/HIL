@@ -1,6 +1,7 @@
 import socket
 import json
 import numpy as np
+import serial
 
 def info(status, msg, pad=60):
     dot_count = pad - len(msg) - len(status)
@@ -72,26 +73,47 @@ class TCPConnection(ConnectionInterface):
 # port no estilo '/dev/ttyUSB0' é um padrão Mac/Linux, para windows é diferente
 # mas acredito que devam existir pacotes python que lidem e generalizem isso para qualquer sistema
 class SerialConnection(ConnectionInterface):
-    def __init__(self, verbose, port='/dev/ttyUSB0', baudrate=9600):
+    def __init__(self, verbose, port='/dev/ttyUSB0', baudrate=9600, timeout=1):
         self.port = port
         self.baudrate = baudrate
+        self.verbose = verbose
+        self.timeout = timeout
         self.serial = None
 
     def connect(self):
-        # To be implemented
-        pass
+
+        try:
+            self.serial = serial.Serial(self.port, self.baudrate, timeout=self.timeout)
+            if self.verbose:
+                print(f"Connected to {self.port} at {self.baudrate} baud.")
+        except serial.SerialException as e:
+            print(f"Failed to connect: {e}")
 
     def disconnect(self):
-        # To be implemented
-        pass
+        if self.serial and self.serial.is_open:
+            self.serial.close()
+            if self.verbose:
+                print(f"Disconnected from {self.port}.")
 
     def send(self, message):
-        # To be implemented
-        pass
+        if self.serial and self.serial.is_open:
+            try:
+                self.serial.write(message.encode())
+            except serial.SerialTimeoutException as e:
+                print(f"Serial Timeout: {e}")
 
     def receive(self):
-        # To be implemented
-        pass
+        if self.serial and self.serial.is_open:
+
+            try:
+                message = self.serial.readline().decode().strip()  
+                if self.verbose:
+                    print(f"Received: {message}")
+                return message
+            
+            except serial.SerialException as e:
+                print(f"Failed to receive: {e}")
+        return None
 
 # RESPONSÁVEL POR CRIAR OS DIFERENTES TIPOS DE CONEXÕES
 class ConnectionFactory:
